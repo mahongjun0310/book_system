@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml
+
+"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <title></title>
+    <style>
+        .pagination a {
+            color: black;
+            float: left;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color .3s;
+        }
+
+        /* Style the active/current link */
+        .pagination a.active {
+            background-color: dodgerblue;
+            color: white;
+        }
+
+        /* Add a grey background color on mouse-over */
+        .pagination a:hover:not(.active) {background-color: #ddd;}
+    </style>
+</head>
+<body>
+<h1>图书借阅系统</h1>
+<form action="/" method="post">
+    图书分类:&nbsp;
+    <select id="bookType" name="bookType">
+        <option value="0">-----请选择-----</option>
+        <option value="1">小说</option>
+        <option value="2">文学</option>
+        <option value="3">传记</option>
+        <option value="4">艺术</option>
+        <option value="5">少儿</option>
+        <option value="6">经济</option>
+        <option value="7">管理</option>
+        <option value="8">科技</option>
+    </select>&nbsp;&nbsp;&nbsp;
+    图书名称:&nbsp;<input id="bookName" name="bookName" th:value="${bookInfo.bookName}" />&nbsp;&nbsp;&nbsp;
+    是否借阅:&nbsp;
+    <select id="isBorrow" name="isBorrow">
+        <option value="-1">-----请选择-----</option>
+        <option value="0">未借阅</option>
+        <option value="1">已借阅</option>
+    </select>&nbsp;&nbsp;&nbsp;
+    <input type="submit" value="查询"/>
+</form>
+<br>
+当前用户：
+<span sec:authentication="name" >The value of the "name" property of the authentication object should appear here.</span>&nbsp;&nbsp;&nbsp;
+<a href="/logout" />退出</a>
+<br><br>
+<table border="1">
+    <tr>
+        <td>图书编号</td>
+        <td>图书分类</td>
+        <td>图书名字</td>
+        <td>作者</td>
+        <td>出版社</td>
+        <td>操作</td>
+    </tr>
+    <tr th:each="book : *{pagination.getResults()}" >
+        <td th:text="${book.bookCode}"></td>
+        <td th:switch="${book.bookType}">
+            <div th:case="1" th:text="小说" th:value="1"></div>
+            <div th:case="2" th:text="文学" th:value="2"></div>
+            <div th:case="3" th:text="传记" th:value="3"></div>
+            <div th:case="4" th:text="艺术" th:value="4"></div>
+            <div th:case="5" th:text="少儿" th:value="5"></div>
+            <div th:case="6" th:text="经济" th:value="6"></div>
+            <div th:case="7" th:text="管理" th:value="7"></div>
+            <div th:case="8" th:text="科技" th:value="8"></div>
+        </td>
+        <td th:text="${book.bookName}"></td>
+        <td th:text="${book.bookAuthor}"></td>
+        <td th:text="${book.publishPress}"></td>
+        <td th:switch="${book.isBorrow}">
+            <a href="" th:case="0" th:text="申请借阅" th:value="0"></a>
+            <div th:case="1" th:text="已借阅" th:value="1"></div>
+        </td>
+    </tr>
+</table>
+<br>
+<div class="pagination">
+    <a href="#">&laquo;</a>
+    <!--<a href="#">1</a>-->
+    <!--<a class="active" href="#">2</a>-->
+    <!--<a href="#">3</a>-->
+    <!--<a href="#">4</a>-->
+    <!--<a href="#">5</a>-->
+    <!--<a href="#">6</a>-->
+    <a th:each="pageNumber : ${#numbers.sequence(1, pagination.pageCount)}" th:text="${pageNumber}" th:onclick="'javascript:pageChange('+${pageNumber}+');'"></a>
+    <a href="#">&raquo;</a>
+</div>
+<a th:text="'共'+${pagination.pageCount}+'页'"></a>
+
+<script th:inline="javascript">
+
+    var bt = [[${bookInfo.bookType}]];
+    var bn = [[${bookInfo.bookName}]];
+    var ib = [[${bookInfo.isBorrow}]];
+
+
+    function pageChange(currentPageIndex){
+        var url ='?currentPageIndex=' + currentPageIndex;
+        if(bt !== null) {
+            url+='&bookType=' + bt;
+        }
+        if(bn !== null) {
+            url+='&bookName=' + bn;
+        }
+        if(ib !== null) {
+            url+='&isBorrow=' + ib;
+        }
+
+        window.location.href = url;
+        window.event.returnValue=false;
+    }
+
+    // var currentPageIndex = [[${pagination.getCurrentPageIndex()}]];
+    // if(currentPageIndex === null || currentPageIndex == 0) currentPageIndex = 1;
+    // var allA = document.getElementsByName("pageCount");
+    // for(var a in allA) {
+    //     alert(a);
+    //     if(a.text == currentPageIndex) {
+    //         a.className = 'active';
+    //     }
+    // }
+
+
+</script>
+</body>
+
+</html>

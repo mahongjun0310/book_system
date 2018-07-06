@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.book_system.repository.BookInfoMapper">
+    <resultMap id="bookInfoResultMap" type="com.example.book_system.domain.BookInfo">
+        <id column="book_id" property="bookId"/>
+        <result column="book_code" property="bookCode"/>
+        <result column="book_name" property="bookName"/>
+        <result column="book_type" property="bookType"/>
+        <result column="book_author" property="bookAuthor"/>
+        <result column="publish_press" property="publishPress"/>
+        <result column="publish_date" property="publishDate" javaType="java.sql.Date" jdbcType="DATE"/>
+        <result column="is_borrow" property="isBorrow"/>
+        <result column="createdBy" property="createdBy"/>
+        <result column="creation_time" property="creationTime"/>
+        <result column="last_updatetime" property="lastUpdatetime"/>
+    </resultMap>
+
+
+
+    <select id="count" resultType="int">
+        SELECT count(*) FROM book_info
+    </select>
+
+
+    <select id="pageCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM book_info
+        <!--ORDER BY creation_time DESC-->
+        <where>
+            <if test="bookInfo.bookType!=null and bookInfo.bookType!=0">
+                AND book_type=#{bookInfo.bookType}
+            </if>
+            <if test="bookInfo.bookName!=null and bookInfo.bookName!=''">
+                AND book_name=#{bookInfo.bookName}
+            </if>
+            <if test="bookInfo.isBorrow!=null and bookInfo.isBorrow!=-1">
+                AND is_borrow=#{bookInfo.isBorrow}
+            </if>
+        </where>
+    </select>
+
+    <select id="findBooks"  resultMap="bookInfoResultMap">
+        SELECT * FROM book_info
+        <!--ORDER BY creation_time DESC-->
+        <where>
+            <if test="bookInfo.bookType!=null and bookInfo.bookType!=0">
+                AND book_type=#{bookInfo.bookType}
+            </if>
+            <if test="bookInfo.bookName!=null and bookInfo.bookName!=''">
+                AND book_name=#{bookInfo.bookName}
+            </if>
+            <if test="bookInfo.isBorrow!=null and bookInfo.isBorrow!=-1">
+                AND is_borrow=#{bookInfo.isBorrow}
+            </if>
+        </where>
+        LIMIT ${(pagination.currentPageIndex - 1)* pagination.PAGESIZE}, #{pagination.PAGESIZE}
+    </select>
+
+</mapper>
